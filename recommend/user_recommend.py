@@ -157,13 +157,13 @@ def load_model() :
     return : tf-idf model
 
     '''
-    path = os.path.join(os.getcwd(), 'tfidf.pkl')
+    path = os.path.join(os.getcwd(), '/data/tfidf.pkl')
     model = joblib.load(path)
     return model
 
 
 def load_dataframe() :
-    path = os.path.join(os.getcwd(), 'data.pkl')
+    path = os.path.join(os.getcwd(), '/data/data.pkl')
     data = pd.read_pickle(path)
 
     return data

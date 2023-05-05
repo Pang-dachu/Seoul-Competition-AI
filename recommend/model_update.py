@@ -214,13 +214,13 @@ def save_model(data) :
     data : dataframe
 
     '''
-    path = os.path.join(os.getcwd(), 'tfidf.pkl')
+    path = os.path.join(os.getcwd(), '/data/tfidf.pkl')
     tfidf_vector = TfidfVectorizer().fit( data["mecab"] )
     dump(tfidf_vector, path)
 
 
 def save_dataframe(data) :
-    path = os.path.join(os.getcwd(), 'data.pkl')
+    path = os.path.join(os.getcwd(), '/data/data.pkl')
     data.to_pickle(path)
 
 
