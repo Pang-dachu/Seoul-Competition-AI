@@ -19,93 +19,101 @@ import json
 import warnings
 warnings.filterwarnings("ignore")
 
-
-# 모델 업데이트 함수
-def get_dataframe(API_KEY : str , DATA_URL : str) :
+# 모델 및 df 존재 확인 
+def check_model_data() :
     '''
-    - 초기 모델 생성을 위하여 공공데이터를 json 형태로 받아와 데이터프레임으로 생성.
-    - 이후 백엔드에서 데이터를 받아오는 과정으로 변경시 사용하지 않음.
-
-    API_KEY : 공공 데이터의 API를 받아오기 위한 개인 키 값.
-    DATA_URL : 공공 데이터의 API URL 값
-
-    return : pd.DataFrame
-
+    - 모델 및 data가 존재하는지 확인 
+    - 존재하지 않는 경우 모델 및 data 생성 
     '''
-    data = pd.DataFrame()
+    # 모델 저장 경로 : '/data/tfidf.pkl'
+    # 데이터 저장 경로 : '/data/data.pkl'
+    model = '/data/tfidf.pkl'
+    data  = '/data/data.pkl'
+    
+    # 모델과 데이터 존재 확인 
+    if os.path.isfile(model) and os.path.isfile(data):
+        # print("파일 있음")
+        return True
+    else :
+        print("파일 없음")
+        # 최초 모델 및 데이터 생성 코드 실행 추가 
+        init_model_data()
 
+
+# 최초 모델 및 df 생성 
+def init_model_data() :
+    '''
+    - 전체 데이터에 대한 모델 생성 및 데이터 프레임 저장 
+    - 교육 정보 backend에 전체 데이터 요청하는 부분 맞추기 
+    
+    
+    return 없음 : model, dataframe 두 개의파일 pkl로 저장 
+    '''
+    # 교육 정보 backend에 현재 존재하는 전체 데이터 요청 코드 작성 
+    
     # 요청 및 json 데이터 변환
-    response = requests.get(DATA_URL)
+#     response = requests.get(DATA_URL)
+#     response_data = response.content.decode()
+#     json_data = json.loads(response_data)
+#     data = pd.json_normalize(json_data[list( json_data.keys() )[0]]['row'])
+    
+    # 받아온 데이터에 대한 컬럼명, 전처리 등 수행 
+    data = date_preprocessing(data)
+    data = data_preprocessing(data)
+
+    # 저장 
+    save_model(data)
+    save_dataframe(data)    
+
+
+# 모델 업데이트 
+def update_model_data(response) :
+    # 스케쥴러를 통한 한달 단위 기준 모델 및 데이터 업데이트 
+    # 1. 데이터 : 기존 데이터에 추가, 중복 확인
+    # 2. 모델 : 생성된 데이터에 대하여 Vectorizor 모델 재 생성 후 저장 
+    
+    # 데이터 요청 
+    # 요청은 아마 routers에서 받아오는 것으로 예상 
+    
+    # 기존 코드에서 사용되던 부분 -> 수정해서 사용하면 될 듯 
+#     response = requests.get(DATA_URL)
     response_data = response.content.decode()
     json_data = json.loads(response_data)
+    add_data = pd.json_normalize(json_data[list( json_data.keys() )[0]]['row'])
+    
+    # 추가된 데이터의 전처리 수행 
+    # 1. 날짜형식 
+    # 2. 불용어 처리 및 형태소 분리
+    
+    # 1. 날짜 형식 변경 
+    add_data = date_preprocessing(add_data)
+    
+    # 2. 불용어 처리 및 형태소 분리 
+    add_data = data_preprocessing(add_data)
+    
 
-    # 데이터 row 갯수 확인
-    # 데이터는 한번에 1000개 단위로만 요청이 가능함.
-    list_total_count = json_data[list( json_data.keys() )[0]]['list_total_count']
-
-    # 요청 갯수 제한에 따른 반복 실행하여 데이터 프레임 생성
-    count = list_total_count // 1000
-    les_count = list_total_count % 1000
-
-    # 반복을 통한 데이터 프레임 생성
-    # 1000개 단위
-    for i in range(count) :
-        temp_url = DATA_URL[:-4]+str(1000*i + 1) + "/" + str(1000*(i+1))
-        response = requests.get(temp_url)
-
-        temp_data = response.content.decode()
-        json_data = json.loads(temp_data)
-
-        temp_df = pd.json_normalize(json_data[list( json_data.keys() )[0]]['row'])
-        data = pd.concat( [data, temp_df] )
-
-    # 1000개 단위로 반복 이후 나머지 갯수에 대한 추가 처리
-    temp_url =  DATA_URL[:-4]+str(1000*count + 1) + "/" + str(1000*count + les_count)
-    response = requests.get(temp_url)
-
-    temp_data = response.content.decode()
-    json_data = json.loads(temp_data)
-
-    temp_df = pd.json_normalize(json_data[list( json_data.keys() )[0]]['row'])
-
-    # 1000개 단위, 나머지 단위에 대한 데이터 병합
-    data = pd.concat( [data, temp_df] )
-
-    return data
-
-
-def concat_data(data1, data2 ) :
-    '''
-    - 초기 모델 생성을 위하여 공공데이터를 json 형태로 받아와 데이터프레임으로 생성.
-    - 이후 백엔드에서 데이터를 받아오는 과정으로 변경시 사용하지 않음.
-    - 초기에 사용하는 데이터가 2개이므로 병합하는 과정이 필요했음.
-
-    data1 : DataFrame
-    data2 : DataFrame
-
-    return : pd.DataFrame
-
-    '''
-    # 컬럼명 통일 시키는 과정
-    data1.columns = ['교육넘버', '교육명', '교육신청시작일', '교육신청종료일', '교육시작일', '교육종료일', "수업시간", '수강정원', '교육상태', '교육비용', '강좌상세화면']
-    data2.columns = ["교육넘버", "교육명", "교육시작일", "교육종료일", "교육신청시작일", "교육신청종료일", "수강정원", "교육비용", "교육상태", "강좌상세화면"]
-
-    # 컬럼명 순서 통일
-    col_sort = ['교육넘버', '교육명', '교육신청시작일', '교육신청종료일', '교육시작일', '교육종료일',  '수강정원','교육상태', '교육비용', '강좌상세화면']
-
-    data_1 = data1[ col_sort ]
-    data_2 = data2[ col_sort ]
-    # 이후 concat 진행
-    data = pd.concat([data_1, data_2])
-
-    return data
-
+    # 기존 데이터에 받아온 데이터 추가 
+    # data : 기존 데이터 
+    # add_data : 추가된 데이터 
+    
+    # 함수 수정할 것 
+    
+    # 기존 데이터 로드
+    path = os.path.join(os.getcwd(), 'data', '/data/data.pkl')
+    data = pd.read_pickle(path)
+    
+    data = pd.concat([data, add_data])
+    
+    # 중복 행 제거 
+    data = data.drop_duplicates()
+    
+    # 모델 재생성, 데이터 재생성 -> 저장
+    save_model(data)
+    save_dataframe(data)
 
 def date_preprocessing(dataframe) :
     '''
-    - 두 개의 데이터 프레임이 날짜 표현을 서로 다른 방식으로 표현함
-    - 신청 가능한 교육을 날짜 기준으로 선정할 예정이므로 datetime을 사용하기 위해 날짜 형식 변경
-    - 이후 백엔드에서 데이터를 받아오는 경우 수정되거나 사용되지 않을 수 있음.
+    - 데이터에 대한 날짜 형식 변경
 
     dataframe  : dataframe
 
@@ -115,13 +123,13 @@ def date_preprocessing(dataframe) :
     ## 날짜 정보 datetime
 
     # 표현 형식 변경
-    dataframe["교육신청시작일"] = dataframe["교육신청시작일"].apply(lambda x : re.sub(r"\.", r"-", x) )
-    dataframe["교육신청종료일"] = dataframe["교육신청종료일"].apply(lambda x : re.sub(r"\.", r"-", x) )
-    dataframe["교육시작일"] = dataframe["교육시작일"].apply(lambda x : re.sub(r"\.", r"-", x) )
-    dataframe["교육종료일"] = dataframe["교육종료일"].apply(lambda x : re.sub(r"\.", r"-", x) )
+    dataframe["registerStart"] = dataframe["registerStart"].apply(lambda x : re.sub(r"\.", r"-", x) )
+    dataframe["registerEnd"] = dataframe["registerEnd"].apply(lambda x : re.sub(r"\.", r"-", x) )
+    dataframe["educationStart"] = dataframe["educationStart"].apply(lambda x : re.sub(r"\.", r"-", x) )
+    dataframe["educationEnd"] = dataframe["educationEnd"].apply(lambda x : re.sub(r"\.", r"-", x) )
 
-    # int, datetime 형태 변경
-    date_trans_col = ["교육신청시작일","교육신청종료일","교육시작일","교육종료일"]
+    # datetime 형태 변경
+    date_trans_col = ["registerStart","registerEnd","educationStart","educationEnd"]
 
     for col in date_trans_col :
         dataframe[col] = pd.to_datetime( dataframe[col] )
@@ -200,7 +208,7 @@ def data_preprocessing(dataframe) :
 
     '''
     # 교육명 불용어 처리하여 clean_sentence 컬럼으로 생성
-    dataframe["clean_sentence"] = dataframe["교육명"].apply(lambda x : clean_sentence(x) )
+    dataframe["clean_sentence"] = dataframe["name"].apply(lambda x : clean_sentence(x) )
 
     # 교육명 mecab 명사 토크나이징하여 mecab 컬럼으로 생성
     dataframe["mecab"] = dataframe["clean_sentence"].apply(lambda x : tokenize(x) )
@@ -222,38 +230,6 @@ def save_model(data) :
 def save_dataframe(data) :
     path = os.path.join(os.getcwd(), 'data', 'data.pkl')
     data.to_pickle(path)
-
-
-def model_update() :
-    '''
-    - 모델 업데이트
-    - 일정 주기로 업데이트 시 실행할 수 있도록
-    - .py 파일을 따로 생성하는 방법도 고려
-
-    input_data : str
-    data : dataframe
-    vectorizer : TfidfVectorizer
-
-    return : str
-
-    '''
-
-    API_KEY = "61484f6245666f7838344a79694e77"
-
-    서울시50플러스포털교육정보 = f"http://openapi.seoul.go.kr:8088/{API_KEY}/json/FiftyPotalEduInfo/1/5/"
-    서울시어르신취업지원센터교육정보 = f"http://openapi.seoul.go.kr:8088/{API_KEY}/json/tbViewProgram/1/5/"
-
-    data_01 = get_dataframe(API_KEY, 서울시50플러스포털교육정보)
-    data_02 = get_dataframe(API_KEY, 서울시어르신취업지원센터교육정보)
-    total_data = concat_data(data_01, data_02)
-
-    total_data = date_preprocessing(total_data)
-    total_data = data_preprocessing(total_data)
-
-    save_model(total_data)
-    save_dataframe(total_data)
-
-    print("모델 업데이트 완료")
 
 
 

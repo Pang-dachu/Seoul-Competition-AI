@@ -20,8 +20,8 @@ sched = BackgroundScheduler(timezone='Asia/Seoul')
 def job():
     '''
     - 마지막 날에 실행
-    - TfidfVectorizer 모델 /server 에 저장
-    - DateFrame /server 에 저장
+    - TfidfVectorizer 모델 /data 에 저장
+    - DateFrame /data 에 저장
     - 한달치 데이터 분석 및 응답
     '''
     # 한달동안 추가된 educations 데이터를 받아 TF-IDF Vectorizer 파일 업데이트
