@@ -66,33 +66,6 @@ def init_model_data() :
     save_dataframe(data)    
 
 
-def concat_data(data1, data2 ) :
-    '''
-    - 초기 모델 생성을 위하여 공공데이터를 json 형태로 받아와 데이터프레임으로 생성.
-    - 이후 백엔드에서 데이터를 받아오는 과정으로 변경시 사용하지 않음.
-    - 초기에 사용하는 데이터가 2개이므로 병합하는 과정이 필요했음.
-
-    data1 : DataFrame
-    data2 : DataFrame
-
-    return : pd.DataFrame
-
-    '''
-    # 컬럼명 통일 시키는 과정
-    data1.columns = ['교육넘버', '교육명', '교육신청시작일', '교육신청종료일', '교육시작일', '교육종료일', "수업시간", '수강정원', '교육상태', '교육비용', '강좌상세화면']
-    data2.columns = ["교육넘버", "교육명", "교육시작일", "교육종료일", "교육신청시작일", "교육신청종료일", "수강정원", "교육비용", "교육상태", "강좌상세화면"]
-
-    # 컬럼명 순서 통일
-    col_sort = ['교육넘버', '교육명', '교육신청시작일', '교육신청종료일', '교육시작일', '교육종료일',  '수강정원','교육상태', '교육비용', '강좌상세화면']
-
-    data_1 = data1[ col_sort ]
-    data_2 = data2[ col_sort ]
-    # 이후 concat 진행
-    data = pd.concat([data_1, data_2])
-
-    return data
-
-
 def date_preprocessing(dataframe) :
     '''
     - 두 개의 데이터 프레임이 날짜 표현을 서로 다른 방식으로 표현함
