@@ -163,7 +163,7 @@ def load_model() :
 
 
 def load_dataframe() :
-    path = os.path.join(os.getcwd(), 'data', 'data.pkl')
+    path = os.path.join(os.getcwd(), 'data', '/data/data.pkl')
     data = pd.read_pickle(path)
 
     return data
