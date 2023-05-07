@@ -208,7 +208,7 @@ def data_preprocessing(dataframe) :
 
     '''
     # 교육명 불용어 처리하여 clean_sentence 컬럼으로 생성
-    dataframe["clean_sentence"] = dataframe["교육명"].apply(lambda x : clean_sentence(x) )
+    dataframe["clean_sentence"] = dataframe["name"].apply(lambda x : clean_sentence(x) )
 
     # 교육명 mecab 명사 토크나이징하여 mecab 컬럼으로 생성
     dataframe["mecab"] = dataframe["clean_sentence"].apply(lambda x : tokenize(x) )
