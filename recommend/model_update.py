@@ -113,9 +113,7 @@ def update_model_data() :
 
 def date_preprocessing(dataframe) :
     '''
-    - 두 개의 데이터 프레임이 날짜 표현을 서로 다른 방식으로 표현함
-    - 신청 가능한 교육을 날짜 기준으로 선정할 예정이므로 datetime을 사용하기 위해 날짜 형식 변경
-    - 이후 백엔드에서 데이터를 받아오는 경우 수정되거나 사용되지 않을 수 있음.
+    - 데이터에 대한 날짜 형식 변경
 
     dataframe  : dataframe
 
@@ -125,13 +123,13 @@ def date_preprocessing(dataframe) :
     ## 날짜 정보 datetime
 
     # 표현 형식 변경
-    dataframe["교육신청시작일"] = dataframe["교육신청시작일"].apply(lambda x : re.sub(r"\.", r"-", x) )
-    dataframe["교육신청종료일"] = dataframe["교육신청종료일"].apply(lambda x : re.sub(r"\.", r"-", x) )
-    dataframe["교육시작일"] = dataframe["교육시작일"].apply(lambda x : re.sub(r"\.", r"-", x) )
-    dataframe["교육종료일"] = dataframe["교육종료일"].apply(lambda x : re.sub(r"\.", r"-", x) )
+    dataframe["registerStart"] = dataframe["registerStart"].apply(lambda x : re.sub(r"\.", r"-", x) )
+    dataframe["registerEnd"] = dataframe["registerEnd"].apply(lambda x : re.sub(r"\.", r"-", x) )
+    dataframe["educationStart"] = dataframe["educationStart"].apply(lambda x : re.sub(r"\.", r"-", x) )
+    dataframe["educationEnd"] = dataframe["educationEnd"].apply(lambda x : re.sub(r"\.", r"-", x) )
 
-    # int, datetime 형태 변경
-    date_trans_col = ["교육신청시작일","교육신청종료일","교육시작일","교육종료일"]
+    # datetime 형태 변경
+    date_trans_col = ["registerStart","registerEnd","educationStart","educationEnd"]
 
     for col in date_trans_col :
         dataframe[col] = pd.to_datetime( dataframe[col] )
