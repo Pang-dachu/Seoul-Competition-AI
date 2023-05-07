@@ -93,7 +93,7 @@ def data_preprocessing(dataframe) :
 
     '''
     # 교육명 불용어 처리하여 clean_sentence 컬럼으로 생성
-    dataframe["clean_sentence"] = dataframe["교육명"].apply(lambda x : clean_sentence(x) )
+    dataframe["clean_sentence"] = dataframe["name"].apply(lambda x : clean_sentence(x) )
 
     # 교육명 mecab 명사 토크나이징하여 mecab 컬럼으로 생성
     dataframe["mecab"] = dataframe["clean_sentence"].apply(lambda x : tokenize(x) )
@@ -141,10 +141,10 @@ def possible_edu (dataframe) :
 
     # 수강 신청이 가능한 경우
     # 1. 교육 상태가 마감이 아닌 경우
-    cond_01 = (dataframe["교육상태"] == "마감")
+    cond_01 = (dataframe["status"] == "마감")
 
     # 2. 교육 신청 종료일이 현재 날짜를 지나지 않은 경우
-    cond_02 = (dataframe["교육신청종료일"] > today)
+    cond_02 = (dataframe["registerEnd"] > today)
 
     temp_data = dataframe.loc[ ~cond_01 & cond_02 ]
 
@@ -188,7 +188,7 @@ def edu_recommend(input_data) :
     # 입력 단어에 대한 임시 데이터 프레임 생성
     temp = pd.DataFrame({
         # "교육넘버" : "0000",
-        "교육명": [input_data],
+        "name": [input_data],
         "clean_sentence" : clean_sentence(input_data),
          "mecab" : ["123"]
     })
@@ -224,7 +224,7 @@ def edu_recommend(input_data) :
             return None
 
     response = []
-    for i,j in zip(temp["교육명"], temp["cosin"]):
+    for i,j in zip(temp["name"], temp["cosin"]):
         response.append({ "name" : i, "cosin" : j})
 
     return response
