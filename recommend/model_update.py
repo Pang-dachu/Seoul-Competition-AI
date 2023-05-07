@@ -232,38 +232,6 @@ def save_dataframe(data) :
     data.to_pickle(path)
 
 
-def model_update() :
-    '''
-    - 모델 업데이트
-    - 일정 주기로 업데이트 시 실행할 수 있도록
-    - .py 파일을 따로 생성하는 방법도 고려
-
-    input_data : str
-    data : dataframe
-    vectorizer : TfidfVectorizer
-
-    return : str
-
-    '''
-
-    API_KEY = "61484f6245666f7838344a79694e77"
-
-    서울시50플러스포털교육정보 = f"http://openapi.seoul.go.kr:8088/{API_KEY}/json/FiftyPotalEduInfo/1/5/"
-    서울시어르신취업지원센터교육정보 = f"http://openapi.seoul.go.kr:8088/{API_KEY}/json/tbViewProgram/1/5/"
-
-    data_01 = get_dataframe(API_KEY, 서울시50플러스포털교육정보)
-    data_02 = get_dataframe(API_KEY, 서울시어르신취업지원센터교육정보)
-    total_data = concat_data(data_01, data_02)
-
-    total_data = date_preprocessing(total_data)
-    total_data = data_preprocessing(total_data)
-
-    save_model(total_data)
-    save_dataframe(total_data)
-
-    print("모델 업데이트 완료")
-
-
 
 
 
