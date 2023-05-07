@@ -67,7 +67,7 @@ def init_model_data() :
 
 
 # 모델 업데이트 
-def update_model_data() :
+def update_model_data(response) :
     # 스케쥴러를 통한 한달 단위 기준 모델 및 데이터 업데이트 
     # 1. 데이터 : 기존 데이터에 추가, 중복 확인
     # 2. 모델 : 생성된 데이터에 대하여 Vectorizor 모델 재 생성 후 저장 
