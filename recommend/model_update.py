@@ -19,6 +19,25 @@ import json
 import warnings
 warnings.filterwarnings("ignore")
 
+# 모델 및 df 존재 확인 
+def check_model_data() :
+    '''
+    - 모델 및 data가 존재하는지 확인 
+    - 존재하지 않는 경우 모델 및 data 생성 
+    '''
+    # 모델 저장 경로 : '/data/tfidf.pkl'
+    # 데이터 저장 경로 : '/data/data.pkl'
+    model = '/data/tfidf.pkl'
+    data  = '/data/data.pkl'
+    
+    # 모델과 데이터 존재 확인 
+    if os.path.isfile(model) and os.path.isfile(data):
+        # print("파일 있음")
+        return True
+    else :
+        print("파일 없음")
+        # 최초 모델 및 데이터 생성 코드 실행 추가 
+
 
 # 모델 업데이트 함수
 def get_dataframe(API_KEY : str , DATA_URL : str) :
