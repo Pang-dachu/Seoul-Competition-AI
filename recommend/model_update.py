@@ -37,6 +37,33 @@ def check_model_data() :
     else :
         print("파일 없음")
         # 최초 모델 및 데이터 생성 코드 실행 추가 
+        init_model_data()
+
+
+# 최초 모델 및 df 생성 
+def init_model_data() :
+    '''
+    - 전체 데이터에 대한 모델 생성 및 데이터 프레임 저장 
+    - 교육 정보 backend에 전체 데이터 요청하는 부분 맞추기 
+    
+    
+    return 없음 : model, dataframe 두 개의파일 pkl로 저장 
+    '''
+    # 교육 정보 backend에 현재 존재하는 전체 데이터 요청 코드 작성 
+    
+    # 요청 및 json 데이터 변환
+#     response = requests.get(DATA_URL)
+#     response_data = response.content.decode()
+#     json_data = json.loads(response_data)
+#     data = pd.json_normalize(json_data[list( json_data.keys() )[0]]['row'])
+    
+    # 받아온 데이터에 대한 컬럼명, 전처리 등 수행 
+    data = date_preprocessing(data)
+    data = data_preprocessing(data)
+
+    # 저장 
+    save_model(data)
+    save_dataframe(data)    
 
 
 # 모델 업데이트 함수
