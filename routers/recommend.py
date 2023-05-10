@@ -16,7 +16,7 @@ class TSearchKeyword(BaseModel):
 
 sched = BackgroundScheduler(timezone='Asia/Seoul')
 # (trigger='cron', day='last', hour='4') 매월 말일 새벽 4시에 실행
-@sched.scheduled_job(trigger='interval',  minutes=1)
+@sched.scheduled_job(trigger='interval',  hours=1)
 def job():
     '''
     - 마지막 날에 실행
@@ -46,6 +46,7 @@ def predict(data: TSearchKeyword):
     """
     - searchKeyword와 함께 POST 요청 받음
     """
+    model_update.check_model_data()
 
     prediction = user_recommend.edu_recommend(data.searchKeyword)
     return {"prediction": prediction}

@@ -27,15 +27,15 @@ def check_model_data() :
     '''
     # 모델 저장 경로 : '/data/tfidf.pkl'
     # 데이터 저장 경로 : '/data/data.pkl'
-    model = '/data/tfidf.pkl'
-    data  = '/data/data.pkl'
-    
+    model = 'data/tfidf.pkl'
+    data  = 'data/data.pkl'
+
     # 모델과 데이터 존재 확인 
     if os.path.isfile(model) and os.path.isfile(data):
         # print("파일 있음")
         return True
     else :
-        print("파일 없음")
+        #print("파일 없음")
         # 최초 모델 및 데이터 생성 코드 실행 추가 
         init_model_data()
 
@@ -56,7 +56,26 @@ def init_model_data() :
 #     response_data = response.content.decode()
 #     json_data = json.loads(response_data)
 #     data = pd.json_normalize(json_data[list( json_data.keys() )[0]]['row'])
-    
+    pages = 0
+    sprint_URL = f"http://spring:8080/api/v1/educations?page={pages}"
+    response = requests.get(sprint_URL)
+    response_data = response.content.decode()
+    json_data = json.loads(response_data)
+
+    pages = json_data["totalPages"] 
+
+    data = pd.DataFrame()
+
+    for page in range(0, pages+1) : 
+        sprint_URL = f"http://spring:8080/api/v1/educations?page={page}"
+
+        response = requests.get(sprint_URL)
+        response_data = response.content.decode()
+        json_data = json.loads(response_data)
+        temp_data = pd.DataFrame(json_data['data'])
+
+        data = pd.concat( [data, temp_data] )
+
     # 받아온 데이터에 대한 컬럼명, 전처리 등 수행 
     data = date_preprocessing(data)
     data = data_preprocessing(data)
