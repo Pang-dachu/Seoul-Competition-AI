@@ -1,1 +1,1 @@
-from . import basic, recommend
+from . import model, chat, recommend

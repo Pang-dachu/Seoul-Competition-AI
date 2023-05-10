@@ -171,7 +171,7 @@ def load_dataframe() :
 
 def edu_recommend(input_data) :
     '''
-    - 입력한 단어에 대하여 유사한 교육 추천
+    - 입력한 단어에 대하여 유사한 교육 추천       
     - 백엔드와 연결 이후 return 값을 아이디로 변경
 
     input_data : str
@@ -219,12 +219,14 @@ def edu_recommend(input_data) :
     temp = temp_total_data.loc[ temp_total_data["cosin"] > 0 ]
     temp = temp.sort_values(["cosin"], ascending=False)[1:6]
 
+    response = []
+
     if temp.empty :
             print("추천 정보가 없습니다.")
-            return None
-
-    response = []
-    for i,j in zip(temp["name"], temp["cosin"]):
-        response.append({ "name" : i, "cosin" : j})
+            # empty list 
+            return response
+    
+    for i in temp["name"]:
+        response.append({ "id" : i})
 
     return response
