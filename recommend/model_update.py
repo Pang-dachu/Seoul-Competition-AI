@@ -95,7 +95,7 @@ def update_model_data(response) :
     # 요청은 아마 routers에서 받아오는 것으로 예상 
     
     # 기존 코드에서 사용되던 부분 -> 수정해서 사용하면 될 듯 
-#     response = requests.get(DATA_URL)
+    # response = requests.get(DATA_URL)
     response_data = response.content.decode()
     json_data = json.loads(response_data)
     add_data = pd.json_normalize(json_data[list( json_data.keys() )[0]]['row'])
