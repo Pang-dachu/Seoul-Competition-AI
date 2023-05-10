@@ -1,6 +1,6 @@
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import basic, recommend
+from routers import recommend, chat, model
 from dependencies import get_token_header
 from internal import admin
 from db import get_mysql_connection
@@ -35,8 +35,10 @@ async def read_root():
     cursor.close(); conn.close()
     return {"db_result": result}
 
-app.include_router(basic.router, prefix="/basic", tags=["basic"],)
+
 app.include_router(recommend.router, prefix="/recommend", tags=["recommend"],)
+app.include_router(chat.router, prefix="/chat", tags=["chat"],)
+app.include_router(model.router, prefix="/model", tags=["model"],)
 app.include_router(
     admin.router,
     prefix="/admin",
