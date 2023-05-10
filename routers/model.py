@@ -7,7 +7,7 @@ router = APIRouter()
 # 요기 수정하기 
 # json으로 받기 
 
-class TEducations(BaseModel):
+class TEducation(BaseModel):
     id: int
     name: str
     status: str
@@ -19,20 +19,17 @@ class TEducations(BaseModel):
     educationEnd: str
     url: str
     hits: int
-    reviewsCount: dict[]
 
-
-class TchatHistories(BaseModel):
+class TChatHistory(BaseModel):
     id: int 
     question: str
     answer: str
     feedback: bool
     createdAt: datetime
 
-
 class TModelUpdateData(BaseModel):
-    educations: TEducations[]
-    chatHistories: TchatHistories[]
+    educations: list[TEducation]
+    chatHistories: list[TChatHistory]
 
 
 @router.post("/")
