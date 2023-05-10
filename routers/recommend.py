@@ -28,6 +28,6 @@ def predict(data: TOriginId):
     """
     model_update.check_model_data()
 
-    results = user_recommend.edu_recommend(data.originId)
+    results = user_recommend.id_edu_recommend(data.originId)
     return {"results": results}
 

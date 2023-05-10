@@ -230,3 +230,54 @@ def edu_recommend(input_data) :
         response.append({ "id" : i})
 
     return response
+
+
+def id_edu_recommend(id) :
+    '''
+    - 입력한 id 값에 대하여 유사한 교육 추천       
+
+    input_data : int
+    data : dataframe
+    vectorizer : TfidfVectorizer
+
+    return : str
+    '''
+
+    vectorizer = load_model()
+    data = load_dataframe()
+
+    user_col = data.loc[ data["id"] == id ]
+
+    pos_data = possible_edu(data)
+    total_data = pd.concat([pos_data, user_col])
+    total_data = total_data.drop_duplicates(keep="last")
+
+    # TF-IDF 벡터화
+    tfidf_vector = vectorizer.transform( total_data["mecab"] )
+    tfidf_norm_l1 = l1_normalize(tfidf_vector)
+
+    # 검색 단어
+    target = tfidf_norm_l1[-1]
+
+    # 코사인 유사도 적용
+    cosin_result = []
+
+    for i in tfidf_norm_l1 :
+        cosin_result.append( cosine_similarity_value(target, i) )
+
+    total_data["cosin"] = cosin_result
+
+    temp = total_data.loc[ total_data["cosin"] > 0 ]
+    temp = temp.sort_values(["cosin"], ascending=False)[1:6]
+
+    response = []
+
+    if temp.empty :
+            print("추천 정보가 없습니다.")
+            # empty list 
+            return response
+
+    for i in temp["id"]:
+        response.append({ "id" : i})
+
+    return response
