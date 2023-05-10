@@ -19,7 +19,7 @@ class TEducations(BaseModel):
     educationEnd: str
     url: str
     hits: int
-    reviewsCount: dict[]
+    # reviewsCount: dict[]
 
 
 class TchatHistories(BaseModel):
@@ -31,8 +31,8 @@ class TchatHistories(BaseModel):
 
 
 class TModelUpdateData(BaseModel):
-    educations: TEducations[]
-    chatHistories: TchatHistories[]
+    educations: TEducations
+    chatHistories: TchatHistories
 
 
 @router.post("/")
