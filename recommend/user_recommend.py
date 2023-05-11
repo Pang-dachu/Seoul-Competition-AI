@@ -217,6 +217,7 @@ def edu_recommend(input_data) :
     temp_total_data["cosin"] = cosin_result
 
     temp = temp_total_data.loc[ temp_total_data["cosin"] > 0 ]
+    temp = temp.drop_duplicates()
     temp = temp.sort_values(["cosin"], ascending=False)[1:6]
 
     response = []
@@ -268,6 +269,7 @@ def id_edu_recommend(id) :
     total_data["cosin"] = cosin_result
 
     temp = total_data.loc[ total_data["cosin"] > 0 ]
+    temp = temp.drop_duplicates()
     temp = temp.sort_values(["cosin"], ascending=False)[1:6]
 
     response = []
