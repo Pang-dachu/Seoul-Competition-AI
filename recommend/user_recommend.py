@@ -226,8 +226,8 @@ def edu_recommend(input_data) :
             # empty list 
             return response
     
-    for i in temp["name"]:
-        response.append({ "id" : i})
+    for i in temp["id"]:
+        response.append({ "id" : int(i)})
 
     return response
 
