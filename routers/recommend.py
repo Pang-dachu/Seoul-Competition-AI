@@ -7,7 +7,7 @@ router = APIRouter()
 class TSearchKeyword(BaseModel):
     searchKeyword: str
 
-class TeducationId (BaseModel):
+class TEducationId (BaseModel):
     educationId: int
 
 
@@ -22,7 +22,7 @@ def predict(data: TSearchKeyword):
     return {"results": results}
 
 @router.post("/educationId")
-def predict(data: TeducationId):
+def predict(data: TEducationId):
     """
     - TOriginId 함께 POST 요청 받음
     """
