@@ -1,5 +1,8 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
+from chat import chat
+
+from recommend import model_update, user_recommend
 
 router = APIRouter()
 
@@ -9,7 +12,5 @@ class TChatQuestion(BaseModel):
 @router.post("/answer")
 def predict(data: TChatQuestion):
     
-    # answer = 문장나오는함수(data.question)
-    # return {"answer": answer}
-
-    return {"answer": 0}
+    answer = chat.use_chatbot(data.question)
+    return {"answer": answer}
