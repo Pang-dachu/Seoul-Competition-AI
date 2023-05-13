@@ -7,7 +7,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import os
 import joblib
 from joblib import dump
-from konlpy.tag import Mecab
+from konlpy.tag import Okt
 from datetime import datetime as dt
 
 import numpy as np
@@ -62,7 +62,7 @@ def clean_sentence(sentence) :
 
 def tokenize(original_sent):
     '''
-    - Mecab 형태소 분석기를 사용하여 문장를 "명사" 단위로 분류
+    - Okt 형태소 분석기를 사용하여 문장를 "명사" 단위로 분류
     - 현 데이터는 문장의 의미보다는 사용되는 핵심 단어가 중요할 것으로 판단하여 결정
 
     sentence : Series
@@ -71,7 +71,7 @@ def tokenize(original_sent):
 
     '''
 
-    tokenizer = Mecab()
+    tokenizer = Okt()
 
     # tokenizer를 이용하여 original_sent를 토큰화하여 tokenized_sent에 저장하고, 이를 반환합니다.
     sentence = original_sent.replace('\n', '').strip()
@@ -95,8 +95,8 @@ def data_preprocessing(dataframe) :
     # 교육명 불용어 처리하여 clean_sentence 컬럼으로 생성
     dataframe["clean_sentence"] = dataframe["name"].apply(lambda x : clean_sentence(x) )
 
-    # 교육명 mecab 명사 토크나이징하여 mecab 컬럼으로 생성
-    dataframe["mecab"] = dataframe["clean_sentence"].apply(lambda x : tokenize(x) )
+    # 교육명 okt 명사 토크나이징하여 okt 컬럼으로 생성
+    dataframe["okt"] = dataframe["clean_sentence"].apply(lambda x : tokenize(x) )
 
     return dataframe
 
@@ -171,7 +171,7 @@ def load_dataframe() :
 
 def edu_recommend(input_data) :
     '''
-    - 입력한 단어에 대하여 유사한 교육 추천       
+    - 입력한 단어에 대하여 유사한 교육 추천
     - 백엔드와 연결 이후 return 값을 아이디로 변경
 
     input_data : str
@@ -190,10 +190,10 @@ def edu_recommend(input_data) :
         # "교육넘버" : "0000",
         "name": [input_data],
         "clean_sentence" : clean_sentence(input_data),
-         "mecab" : ["123"]
+         "okt" : ["123"]
     })
 
-    temp["mecab"] = temp["clean_sentence"].apply(lambda x : tokenize(x) )
+    temp["okt"] = temp["clean_sentence"].apply(lambda x : tokenize(x) )
 
     # 검색 단어를 포함한 전체 데이터 프레임
     temp_total_data = data[::]
@@ -202,7 +202,7 @@ def edu_recommend(input_data) :
     temp_total_data = temp_total_data.reset_index( drop=True )
 
     # TF-IDF 벡터화
-    tfidf_vector = vectorizer.transform( temp_total_data["mecab"] )
+    tfidf_vector = vectorizer.transform( temp_total_data["okt"] )
     tfidf_norm_l1 = l1_normalize(tfidf_vector)
 
     # 검색 단어
@@ -224,9 +224,9 @@ def edu_recommend(input_data) :
 
     if temp.empty :
             print("추천 정보가 없습니다.")
-            # empty list 
+            # empty list
             return response
-    
+
     for i in temp["id"]:
         response.append({ "id" : int(i)})
 
@@ -235,7 +235,7 @@ def edu_recommend(input_data) :
 
 def id_edu_recommend(id) :
     '''
-    - 입력한 id 값에 대하여 유사한 교육 추천       
+    - 입력한 id 값에 대하여 유사한 교육 추천
 
     input_data : int
     data : dataframe
@@ -254,7 +254,7 @@ def id_edu_recommend(id) :
     total_data = total_data.drop_duplicates(keep="last")
 
     # TF-IDF 벡터화
-    tfidf_vector = vectorizer.transform( total_data["mecab"] )
+    tfidf_vector = vectorizer.transform( total_data["okt"] )
     tfidf_norm_l1 = l1_normalize(tfidf_vector)
 
     # 검색 단어
@@ -276,7 +276,7 @@ def id_edu_recommend(id) :
 
     if temp.empty :
             print("추천 정보가 없습니다.")
-            # empty list 
+            # empty list
             return response
 
     for i in temp["id"]:

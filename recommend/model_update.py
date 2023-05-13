@@ -6,7 +6,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 import os
 from joblib import dump
-from konlpy.tag import Mecab
+from konlpy.tag import Okt
 from datetime import datetime as dt
 
 import numpy as np
@@ -19,38 +19,38 @@ import json
 import warnings
 warnings.filterwarnings("ignore")
 
-# 모델 및 df 존재 확인 
+# 모델 및 df 존재 확인
 def check_model_data() :
     '''
-    - 모델 및 data가 존재하는지 확인 
-    - 존재하지 않는 경우 모델 및 data 생성 
+    - 모델 및 data가 존재하는지 확인
+    - 존재하지 않는 경우 모델 및 data 생성
     '''
     # 모델 저장 경로 : '/data/tfidf.pkl'
     # 데이터 저장 경로 : '/data/data.pkl'
     model = 'data/tfidf.pkl'
     data  = 'data/data.pkl'
 
-    # 모델과 데이터 존재 확인 
+    # 모델과 데이터 존재 확인
     if os.path.isfile(model) and os.path.isfile(data):
         # print("파일 있음")
         return True
     else :
         #print("파일 없음")
-        # 최초 모델 및 데이터 생성 코드 실행 추가 
+        # 최초 모델 및 데이터 생성 코드 실행 추가
         init_model_data()
 
 
-# 최초 모델 및 df 생성 
+# 최초 모델 및 df 생성
 def init_model_data() :
     '''
-    - 전체 데이터에 대한 모델 생성 및 데이터 프레임 저장 
-    - 교육 정보 backend에 전체 데이터 요청하는 부분 맞추기 
-    
-    
-    return 없음 : model, dataframe 두 개의파일 pkl로 저장 
+    - 전체 데이터에 대한 모델 생성 및 데이터 프레임 저장
+    - 교육 정보 backend에 전체 데이터 요청하는 부분 맞추기
+
+
+    return 없음 : model, dataframe 두 개의파일 pkl로 저장
     '''
-    # 교육 정보 backend에 현재 존재하는 전체 데이터 요청 코드 작성 
-    
+    # 교육 정보 backend에 현재 존재하는 전체 데이터 요청 코드 작성
+
     # 요청 및 json 데이터 변환
 #     response = requests.get(DATA_URL)
 #     response_data = response.content.decode()
@@ -62,11 +62,11 @@ def init_model_data() :
     response_data = response.content.decode()
     json_data = json.loads(response_data)
 
-    pages = json_data["totalPages"] 
+    pages = json_data["totalPages"]
 
     data = pd.DataFrame()
 
-    for page in range(0, pages+1) : 
+    for page in range(0, pages+1) :
         sprint_URL = f"http://spring:8080/api/v1/educations?page={page}"
 
         response = requests.get(sprint_URL)
@@ -76,56 +76,56 @@ def init_model_data() :
 
         data = pd.concat( [data, temp_data] )
 
-    # 받아온 데이터에 대한 컬럼명, 전처리 등 수행 
+    # 받아온 데이터에 대한 컬럼명, 전처리 등 수행
     data = date_preprocessing(data)
     data = data_preprocessing(data)
 
-    # 저장 
+    # 저장
     save_model(data)
-    save_dataframe(data)    
+    save_dataframe(data)
 
 
-# 모델 업데이트 
+# 모델 업데이트
 def update_model_data(response) :
-    # 스케쥴러를 통한 한달 단위 기준 모델 및 데이터 업데이트 
+    # 스케쥴러를 통한 한달 단위 기준 모델 및 데이터 업데이트
     # 1. 데이터 : 기존 데이터에 추가, 중복 확인
-    # 2. 모델 : 생성된 데이터에 대하여 Vectorizor 모델 재 생성 후 저장 
-    
-    # 데이터 요청 
-    # 요청은 아마 routers에서 받아오는 것으로 예상 
-    
-    # 기존 코드에서 사용되던 부분 -> 수정해서 사용하면 될 듯 
+    # 2. 모델 : 생성된 데이터에 대하여 Vectorizor 모델 재 생성 후 저장
+
+    # 데이터 요청
+    # 요청은 아마 routers에서 받아오는 것으로 예상
+
+    # 기존 코드에서 사용되던 부분 -> 수정해서 사용하면 될 듯
     # response = requests.get(DATA_URL)
     response_data = response.content.decode()
     json_data = json.loads(response_data)
     add_data = pd.json_normalize(json_data[list( json_data.keys() )[0]]['row'])
-    
-    # 추가된 데이터의 전처리 수행 
-    # 1. 날짜형식 
-    # 2. 불용어 처리 및 형태소 분리
-    
-    # 1. 날짜 형식 변경 
-    add_data = date_preprocessing(add_data)
-    
-    # 2. 불용어 처리 및 형태소 분리 
-    add_data = data_preprocessing(add_data)
-    
 
-    # 기존 데이터에 받아온 데이터 추가 
-    # data : 기존 데이터 
-    # add_data : 추가된 데이터 
-    
-    # 함수 수정할 것 
-    
+    # 추가된 데이터의 전처리 수행
+    # 1. 날짜형식
+    # 2. 불용어 처리 및 형태소 분리
+
+    # 1. 날짜 형식 변경
+    add_data = date_preprocessing(add_data)
+
+    # 2. 불용어 처리 및 형태소 분리
+    add_data = data_preprocessing(add_data)
+
+
+    # 기존 데이터에 받아온 데이터 추가
+    # data : 기존 데이터
+    # add_data : 추가된 데이터
+
+    # 함수 수정할 것
+
     # 기존 데이터 로드
     path = os.path.join(os.getcwd(), 'data', '/data/data.pkl')
     data = pd.read_pickle(path)
-    
+
     data = pd.concat([data, add_data])
-    
-    # 중복 행 제거 
+
+    # 중복 행 제거
     data = data.drop_duplicates()
-    
+
     # 모델 재생성, 데이터 재생성 -> 저장
     save_model(data)
     save_dataframe(data)
@@ -196,7 +196,7 @@ def clean_sentence(sentence) :
 
 def tokenize(original_sent):
     '''
-    - Mecab 형태소 분석기를 사용하여 문장를 "명사" 단위로 분류
+    - Okt 형태소 분석기를 사용하여 문장를 "명사" 단위로 분류
     - 현 데이터는 문장의 의미보다는 사용되는 핵심 단어가 중요할 것으로 판단하여 결정
 
     sentence : Series
@@ -205,13 +205,13 @@ def tokenize(original_sent):
 
     '''
 
-    tokenizer = Mecab()
+    tokenizer = Okt()
 
     # tokenizer를 이용하여 original_sent를 토큰화하여 tokenized_sent에 저장하고, 이를 반환합니다.
     sentence = original_sent.replace('\n', '').strip()
 
-    # tokenizer.nouns(sentence) -> 명사만 추출
-    tokens = tokenizer.nouns(sentence)
+    # tokenizer.morphs(sentence)를 통해 sentence를 토큰화한 결과를 tokenized_sent에 저장합니다.
+    tokens = tokenizer.morphs(sentence)
 
     tokens = ' '.join(tokens)
 
@@ -229,8 +229,8 @@ def data_preprocessing(dataframe) :
     # 교육명 불용어 처리하여 clean_sentence 컬럼으로 생성
     dataframe["clean_sentence"] = dataframe["name"].apply(lambda x : clean_sentence(x) )
 
-    # 교육명 mecab 명사 토크나이징하여 mecab 컬럼으로 생성
-    dataframe["mecab"] = dataframe["clean_sentence"].apply(lambda x : tokenize(x) )
+    # 교육명 okt 명사 토크나이징하여 okt 컬럼으로 생성
+    dataframe["okt"] = dataframe["clean_sentence"].apply(lambda x : tokenize(x) )
 
     return dataframe
 
@@ -242,7 +242,7 @@ def save_model(data) :
 
     '''
     path = os.path.join(os.getcwd(), 'data','tfidf.pkl')
-    tfidf_vector = TfidfVectorizer().fit( data["mecab"] )
+    tfidf_vector = TfidfVectorizer().fit( data["okt"] )
     dump(tfidf_vector, path)
 
 
