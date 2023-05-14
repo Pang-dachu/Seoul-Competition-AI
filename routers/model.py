@@ -32,7 +32,7 @@ class TChatHistory(BaseModel):
     question: str
     answer: str
     feedback: Optional[bool] = None
-    createAt: datetime
+    createdAt: datetime
 
 class TModelUpdateData(BaseModel):
     educations: list[TEducation]
