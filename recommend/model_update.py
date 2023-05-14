@@ -126,8 +126,8 @@ def update_model_data(update_data) :
     chat_path = os.path.join(os.getcwd(), 'data', 'chatbot_history.pkl')
 
     # 날짜 처리 
-    chatHistories_data["createAt"] = pd.to_datetime( chatHistories_data["createAt"]).dt.date
-    chatHistories_data["createAt"] = pd.to_datetime(chatHistories_data["createAt"])
+    chatHistories_data["createdAt"] = pd.to_datetime( chatHistories_data["createdAt"]).dt.date
+    chatHistories_data["createdAt"] = pd.to_datetime(chatHistories_data["createdAt"])
     
     chatHistories_data.to_pickle(chat_path)
 
