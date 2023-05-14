@@ -3,8 +3,10 @@ from typing import Optional
 from fastapi import APIRouter
 from pydantic import BaseModel
 from datetime import datetime
+from recommend import model_update
 
 router = APIRouter()
+
 
 class StatusEnum(str, Enum):
     sign_future = "수강신청예정"
@@ -14,7 +16,8 @@ class StatusEnum(str, Enum):
 class TEducation(BaseModel):
     id: int
     name: str
-    status = StatusEnum
+    # # status = StatusEnum
+    status: str
     price: int
     capacity: int
     registerStart: str
@@ -29,18 +32,15 @@ class TChatHistory(BaseModel):
     question: str
     answer: str
     feedback: Optional[bool] = None
-    createdAt: datetime
+    createAt: datetime
 
 class TModelUpdateData(BaseModel):
     educations: list[TEducation]
     chatHistories: list[TChatHistory]
 
-
 @router.post("/")
 def predict(data: TModelUpdateData):
 
-    print("fastapi print - ", data)
-    # answer = 문장나오는함수(data.question)
-    # return {"answer": answer}
+    model_update.update_model_data(data)
 
     return {"answer": 0}
