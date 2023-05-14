@@ -1,17 +1,21 @@
+from enum import Enum
+from typing import Optional
 from fastapi import APIRouter
 from pydantic import BaseModel
 from datetime import datetime
 
 router = APIRouter()
 
-# 요기 수정하기 
-# json으로 받기 
+class StatusEnum(str, Enum):
+    sign_future = "수강신청예정"
+    sign_now = "수강신청중"
+    sign_finished = "마감"
 
 class TEducation(BaseModel):
     id: int
     name: str
-    status: str
-    price: str
+    status = StatusEnum
+    price: int
     capacity: int
     registerStart: str
     registerEnd: str
@@ -21,10 +25,10 @@ class TEducation(BaseModel):
     hits: int
 
 class TChatHistory(BaseModel):
-    id: int 
+    id: int
     question: str
     answer: str
-    feedback: bool
+    feedback: Optional[bool] = None
     createdAt: datetime
 
 class TModelUpdateData(BaseModel):
@@ -34,7 +38,8 @@ class TModelUpdateData(BaseModel):
 
 @router.post("/")
 def predict(data: TModelUpdateData):
-    
+
+    print("fastapi print - ", data)
     # answer = 문장나오는함수(data.question)
     # return {"answer": answer}
 

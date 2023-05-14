@@ -4,12 +4,12 @@ from routers import recommend, chat, model
 
 
 def get_application():
-    app = FastAPI(title="Phresh", version="1.0.0")
+    app = FastAPI(title="seoul-competition-ai", version="1.0.0")
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=["http://localhost:8080", "http://springboot:8080"],
+        allow_methods=["get", "post", "put", "update"],
         allow_credentials=True,
-        allow_methods=["*"],
         allow_headers=["*"],
     )
     return app
