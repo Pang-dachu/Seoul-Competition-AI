@@ -80,55 +80,58 @@ def init_model_data() :
     data = date_preprocessing(data)
     data = data_preprocessing(data)
 
+    # reviewsCount 컬럼 삭제 
+    data.drop("reviewsCount", axis=1, inplace=True)
+
     # 저장
     save_model(data)
     save_dataframe(data)
 
 
 # 모델 업데이트
-def update_model_data(response) :
+def update_model_data(update_data) :
     # 스케쥴러를 통한 한달 단위 기준 모델 및 데이터 업데이트
     # 1. 데이터 : 기존 데이터에 추가, 중복 확인
     # 2. 모델 : 생성된 데이터에 대하여 Vectorizor 모델 재 생성 후 저장
 
-    # 데이터 요청
-    # 요청은 아마 routers에서 받아오는 것으로 예상
+    education_data = pd.DataFrame([edu.dict() for edu in update_data.educations])
+    chatHistories_data = pd.DataFrame([edu.dict() for edu in update_data.chatHistories])
 
-    # 기존 코드에서 사용되던 부분 -> 수정해서 사용하면 될 듯
-    # response = requests.get(DATA_URL)
-    response_data = response.content.decode()
-    json_data = json.loads(response_data)
-    add_data = pd.json_normalize(json_data[list( json_data.keys() )[0]]['row'])
+    # 
 
-    # 추가된 데이터의 전처리 수행
-    # 1. 날짜형식
-    # 2. 불용어 처리 및 형태소 분리
+    ### 교육 추천 관련 처리 
 
-    # 1. 날짜 형식 변경
-    add_data = date_preprocessing(add_data)
+    # clean_sentence 처리 
+    # # 1. 날짜 형식 변경
+    add_data = date_preprocessing(education_data)
 
-    # 2. 불용어 처리 및 형태소 분리
+    # # 2. 불용어 처리 및 형태소 분리
     add_data = data_preprocessing(add_data)
 
-
-    # 기존 데이터에 받아온 데이터 추가
-    # data : 기존 데이터
-    # add_data : 추가된 데이터
-
-    # 함수 수정할 것
-
     # 기존 데이터 로드
-    path = os.path.join(os.getcwd(), 'data', '/data/data.pkl')
+    path = os.path.join(os.getcwd(), 'data', 'data.pkl')
     data = pd.read_pickle(path)
 
+    # 원본 데이터와 concat으로 결합 
     data = pd.concat([data, add_data])
 
-    # 중복 행 제거
+    # 중복 제거 
     data = data.drop_duplicates()
 
-    # 모델 재생성, 데이터 재생성 -> 저장
+    # 저장 
     save_model(data)
     save_dataframe(data)
+
+    ### 교육 추천 관련 처리  챗봇 데이터 저장
+    chat_path = os.path.join(os.getcwd(), 'data', 'chatbot_history.pkl')
+
+    # 날짜 처리 
+    chatHistories_data["createAt"] = pd.to_datetime( chatHistories_data["createAt"]).dt.date
+    chatHistories_data["createAt"] = pd.to_datetime(chatHistories_data["createAt"])
+    
+    chatHistories_data.to_pickle(chat_path)
+
+
 
 def date_preprocessing(dataframe) :
     '''
