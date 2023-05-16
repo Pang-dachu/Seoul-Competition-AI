@@ -3,6 +3,15 @@ FROM python:3.10-slim
 
 WORKDIR /usr/src/fastapi
 
+# # transformer
+RUN pip install transformers
+
+# torch cpu
+RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+
+# torch 2.0 gpu 버전
+# RUN pip install torch --index-url https://download.pytorch.org/whl/cu118
+
 # jvm 설치
 RUN apt-get update && apt-get install -y default-jre
 
