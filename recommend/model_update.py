@@ -42,22 +42,18 @@ def check_model_data() :
 
 # 최초 모델 및 df 생성
 def init_model_data() :
+    FASTAPI_API_URL = os.environ.get("FASTAPI_API_URL")
     '''
     - 전체 데이터에 대한 모델 생성 및 데이터 프레임 저장
-    - 교육 정보 backend에 전체 데이터 요청하는 부분 맞추기
+    - 교육 정보 spring에 전체 데이터 요청하는 부분 맞추기
 
 
     return 없음 : model, dataframe 두 개의파일 pkl로 저장
     '''
-    # 교육 정보 backend에 현재 존재하는 전체 데이터 요청 코드 작성
+    # 교육 정보 spring에 현재 존재하는 전체 데이터 요청 코드 작성
 
-    # 요청 및 json 데이터 변환
-#     response = requests.get(DATA_URL)
-#     response_data = response.content.decode()
-#     json_data = json.loads(response_data)
-#     data = pd.json_normalize(json_data[list( json_data.keys() )[0]]['row'])
     pages = 0
-    sprint_URL = f"http://spring:8080/api/v1/educations?page={pages}"
+    sprint_URL = f"{FASTAPI_API_URL}/educations?page={pages}"
     response = requests.get(sprint_URL)
     response_data = response.content.decode()
     json_data = json.loads(response_data)
@@ -67,7 +63,7 @@ def init_model_data() :
     data = pd.DataFrame()
 
     for page in range(0, pages+1) :
-        sprint_URL = f"http://spring:8080/api/v1/educations?page={page}"
+        sprint_URL = f"{FASTAPI_API_URL}/educations?page={page}"
 
         response = requests.get(sprint_URL)
         response_data = response.content.decode()
@@ -80,7 +76,7 @@ def init_model_data() :
     data = date_preprocessing(data)
     data = data_preprocessing(data)
 
-    # reviewsCount 컬럼 삭제 
+    # reviewsCount 컬럼 삭제
     data.drop("reviewsCount", axis=1, inplace=True)
 
     # 저장
@@ -97,11 +93,11 @@ def update_model_data(update_data) :
     education_data = pd.DataFrame([edu.dict() for edu in update_data.educations])
     chatHistories_data = pd.DataFrame([edu.dict() for edu in update_data.chatHistories])
 
-    # 
+    #
 
-    ### 교육 추천 관련 처리 
+    ### 교육 추천 관련 처리
 
-    # clean_sentence 처리 
+    # clean_sentence 처리
     # # 1. 날짜 형식 변경
     add_data = date_preprocessing(education_data)
 
@@ -112,23 +108,23 @@ def update_model_data(update_data) :
     path = os.path.join(os.getcwd(), 'data', 'data.pkl')
     data = pd.read_pickle(path)
 
-    # 원본 데이터와 concat으로 결합 
+    # 원본 데이터와 concat으로 결합
     data = pd.concat([data, add_data])
 
-    # 중복 제거 
+    # 중복 제거
     data = data.drop_duplicates()
 
-    # 저장 
+    # 저장
     save_model(data)
     save_dataframe(data)
 
     ### 교육 추천 관련 처리  챗봇 데이터 저장
     chat_path = os.path.join(os.getcwd(), 'data', 'chatbot_history.pkl')
 
-    # 날짜 처리 
+    # 날짜 처리
     chatHistories_data["createdAt"] = pd.to_datetime( chatHistories_data["createdAt"]).dt.date
     chatHistories_data["createdAt"] = pd.to_datetime(chatHistories_data["createdAt"])
-    
+
     chatHistories_data.to_pickle(chat_path)
 
 

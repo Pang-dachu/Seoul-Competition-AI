@@ -1,13 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routers import recommend, chat, model
-
+import os
 
 def get_application():
     app = FastAPI(title="seoul-competition-ai", version="1.0.0")
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:8080", "http://springboot:8080"],
+        allow_origins=[os.environ.get("FASTAPI_API_DOMAIN")],
         allow_methods=["get", "post", "put", "update"],
         allow_credentials=True,
         allow_headers=["*"],
