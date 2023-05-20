@@ -162,7 +162,7 @@ def mean_pooling(model_output, attention_mask):
     return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
 
 
-def use_chatbot(user_question) :
+def use_chatbot(user_question, chatbot_model) :
     '''
     - 사용자 입력 문자열에 대하여 챗봇의 답변을 문자열로 반환
     - 현재 transformers 를 이용한 방식 
@@ -172,7 +172,7 @@ def use_chatbot(user_question) :
     '''
 
     if check_chat_data()==True :
-        chatbot_model = load_chatbot_model()
+        #chatbot_model = load_chatbot_model()
         chatbot_data  = load_chatbot_data()
         chatbot_tokenizer = load_chatbot_tokenizer()
 
@@ -188,8 +188,9 @@ def use_chatbot(user_question) :
         chatbot_data["cosin"] = chatbot_data["embedding"].map(lambda x : cosine_similarity([final_input_data],[x]).squeeze())
 
         # 해당 수치는 조정해보는 것도 좋음.
-        if chatbot_data["cosin"].max() < 0.50 :
-            answer = "말씀하신 내용을 정확히 이해하지 못했어요.\n다른 문장으로 물어봐주시겠어요?"
+        # if chatbot_data["cosin"].max() < 0.50 :
+        if chatbot_data["cosin"].max() < 0.40 :
+            answer = "핵심 키워드나 다른 키워드를 사용하여 다시 질문 해주시겠어요 ?"
             return answer 
 
     else :
