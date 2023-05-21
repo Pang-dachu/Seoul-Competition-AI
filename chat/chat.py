@@ -82,74 +82,6 @@ def load_chatbot_data() :
 
     return chatbot_data
 
-# def load_chatbot_vector() :
-#     '''
-#     - 챗봇 데이터 로드
-#     - 현재 파일에서 임시로 사용중
-
-#     return : 챗봇 데이터의 벡터
-#     '''
-#     path = os.path.join(os.getcwd(), 'data', 'chatbot_vec.pkl')
-#     chatbot_vector = joblib.load(path)
-
-#     return chatbot_vector
-
-# def tokenize(original_sent):
-#     '''
-#     - Okt 형태소 분석기를 사용하여 형태소 분리
-#     - 현재 파일에서는 임시로 사용중
-
-#     sentence : Series
-
-#     return : Series
-
-#     '''
-
-#     tokenizer = Okt()
-
-#     # tokenizer를 이용하여 original_sent를 토큰화하여 tokenized_sent에 저장하고, 이를 반환합니다.
-#     sentence = original_sent.replace('\n', '').strip()
-
-#     tokens = tokenizer.morphs(sentence)
-
-#     tokens = ' '.join(tokens)
-
-#     return tokens
-
-
-# def use_chatbot(user_question) :
-#     '''
-#     - 사용자 입력 문자열에 대하여 챗봇의 답변을 문자열로 반환
-#     - 현재 TF-IDF 방식으로 임시 구현
-#     - 변경 예정
-
-#     user_question : str
-#     return : str
-
-#     '''
-#     answer = 1
-
-#     if check_chat_data()==True :
-#         chatbot_model = load_chatbot_model()
-#         chatbot_data  = load_chatbot_data()
-#         chatbot_vector = load_chatbot_vector()
-
-#         user_question = tokenize(user_question)
-#         input_vec = chatbot_model.transform([user_question])
-
-#         similarities = cosine_similarity(input_vec, chatbot_vector).flatten()
-
-#         if sum(similarities) == 0 :
-#             answer = "말씀하신 내용을 정확히 이해하지 못했어요.\n다른 문장으로 물어봐주시겠어요?"
-#             return answer
-
-#         best_idx = np.argmax(similarities)
-#         answer = chatbot_data["answer"][best_idx]
-
-#     else :
-#         answer = "챗봇이 잠시 쉬러갔어요. 금방 돌아올게요!"
-
-#     return answer
 
 def mean_pooling(model_output, attention_mask):
     '''
@@ -189,7 +121,7 @@ def use_chatbot(user_question, chatbot_model) :
 
         # 해당 수치는 조정해보는 것도 좋음.
         # if chatbot_data["cosin"].max() < 0.50 :
-        if chatbot_data["cosin"].max() < 0.40 :
+        if chatbot_data["cosin"].max() < 0.50 :
             answer = "핵심 키워드나 다른 키워드를 사용하여 다시 질문 해주시겠어요 ?"
             return answer 
 
