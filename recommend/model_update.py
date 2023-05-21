@@ -162,7 +162,7 @@ def chathistory_fix() :
             질문 : 
             '''
 
-    OPENAI_API_KEY = ""
+    OPENAI_API_KEY = os.environ.get("FASTAPI_OPENAI_KEY")
     openai.api_key = OPENAI_API_KEY
 
     history_path = os.path.join(os.getcwd(), 'data', 'chatbot_history.pkl')
